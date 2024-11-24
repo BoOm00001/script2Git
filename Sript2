@@ -16,14 +16,15 @@ while grep -q "^$NOM_UTILISATEUR:" /etc/passwd; do
 done
 
 # Création du répertoire de bienvenue dans le home de l'utilisateur
-UTILISATEUR_HOME="/home/$NOM_UTILISATEUR/Bienvenue"
+echo "$MDPADMIN" | sudo mkdir "$NOM_UTILISATEUR"
 
-# Crée un utilisateur sans mot de passe avec l'option --allow-bad-names si nécessaire
+# Crée un utilisateur sans mot de passe avec l'option 
 echo "$MDPADMIN" | sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
-
+sudo su $NOM_UTILISATEUR
 # Crée le dossier de bienvenue
-sudo mkdir -p "$UTILISATEUR_HOME"
-sudo touch "$UTILISATEUR_HOME/fichier.txt"
+ mkdir -p "Bienvenue"
+cd Bienvenue
+touch $UTILISATEUR_HOME/fichier.txt
 
     # Change le propriétaire du répertoire et du fichier
 sudo chown "$NOM_UTILISATEUR:$NOM_UTILISATEUR" "$UTILISATEUR_HOME"
@@ -31,14 +32,14 @@ sudo chmod u+rwx "$UTILISATEUR_HOME"
 sudo chmod u+rwx "$UTILISATEUR_HOME/fichier.txt""
 
 # Ajouter des informations dans fichier.txt
-echo "Bienvenue $NOM_UTILISATEUR" > "$UTILISATEUR_HOME/fichier.txt"
+echo "Bienvenue $NOM_UTILISATEUR" > $UTILISATEUR_HOME/fichier.txt
 # Ajout de l'adresse IP à fichier.txt
-ip addr show | grep "inet" | awk '{print$2}' | cut -d/ -f1 >> "$UTILISATEUR_HOME/fichier.txt"
-echo "Votre poste de travail est $NOM_POSTE_DE_TRAVAIL" >> "$UTILISATEUR_HOME/fichier.txt"
+ip addr show | grep "inet" | awk '{print$2}' | cut -d/ -f1 >> $UTILISATEUR_HOME/fichier.txt
+echo "Votre poste de travail est $NOM_POSTE_DE_TRAVAIL" >> $UTILISATEUR_HOME/fichier.txt
 
 # Message de confirmation
 echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
 
 # Affichage du contenu du fichier
-cat "$UTILISATEUR_HOME/fichier.txt"
+cat $UTILISATEUR_HOME/fichier.txt
 
