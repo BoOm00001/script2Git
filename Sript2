@@ -19,7 +19,7 @@ done
 UTILISATEUR_HOME="/home/$NOM_UTILISATEUR/Bienvenue"
 
 # Crée un utilisateur sans mot de passe avec l'option --allow-bad-names si nécessaire
-sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
+echo "$MDPADMIN" | sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
 
 # Crée le dossier de bienvenue
 sudo mkdir -p "$UTILISATEUR_HOME"
