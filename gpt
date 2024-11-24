@@ -28,19 +28,16 @@ while grep -q "^$NOM_UTILISATEUR:" /etc/passwd; do
 done
 
 # Création de l'utilisateur sans mot de passe
-sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
-
-# Définir un mot de passe pour l'utilisateur
-echo "$NOM_UTILISATEUR:$MDPADMIN" | sudo chpasswd
+echo "$MDPADMIN " | sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
 
 # Crée un répertoire de bienvenue dans le dossier personnel de l'utilisateur
 UTILISATEUR_HOME="/home/$NOM_UTILISATEUR/Bienvenue"
-sudo mkdir -p "$UTILISATEUR_HOME"
-sudo touch "$UTILISATEUR_HOME/fichier.txt"
+echo "$MDPADMIN" | sudo mkdir -p "$UTILISATEUR_HOME"
+echo "$MDPADMIN" |sudo touch "$UTILISATEUR_HOME/fichier.txt"
 
 # Changer le propriétaire et définir les permissions
-sudo chown -R "$NOM_UTILISATEUR:$NOM_UTILISATEUR" "$UTILISATEUR_HOME"
-sudo chmod 700 "$UTILISATEUR_HOME"
+echo "$MDPADMIN" |sudo chown -R "$NOM_UTILISATEUR:$NOM_UTILISATEUR" "$UTILISATEUR_HOME"
+echo "$MDPADMIN" |sudo chmod 700 "$UTILISATEUR_HOME"
 
 # Ajouter des informations dans fichier.txt
 echo "Bienvenue $NOM_UTILISATEUR" > "$UTILISATEUR_HOME/fichier.txt"
@@ -52,5 +49,5 @@ echo "Votre poste de travail est $NOM_POSTE_DE_TRAVAIL" >> "$UTILISATEUR_HOME/fi
 echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
 
 # Affichage du contenu de fichier.txt
-cat "$UTILISATEUR_HOME/fichier.txt"
+sudo cat "$UTILISATEUR_HOME/fichier.txt"
  
