@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Définir un mot de passe administrateur par défaut
+MDPADMIN="admin24"
+
+# Demande de saisie du nom utilisateur et du poste de travail
+echo "Entrez votre nom:"
+read NOM_UTILISATEUR
+
+echo "Le nom de votre poste de travail:"
+read NOM_POSTE_DE_TRAVAIL
+
+# Validation des entrées
+if [ -z "$NOM_UTILISATEUR" ]; then
+    echo "Erreur : Le nom d'utilisateur ne peut pas être vide."
+    exit 1
+fi
+
+if [ -z "$NOM_POSTE_DE_TRAVAIL" ]; then
+    echo "Erreur : Le nom du poste de travail ne peut pas être vide."
+    exit 1
+fi
+
+# Vérifie si l'utilisateur existe déjà
+while grep -q "^$NOM_UTILISATEUR:" /etc/passwd; do
+    echo "L'utilisateur $NOM_UTILISATEUR existe déjà, veuillez choisir un autre nom."
+    read NOM_UTILISATEUR
+done
+
+# Création de l'utilisateur sans mot de passe
+sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
+
+# Définir un mot de passe pour l'utilisateur
+echo "$NOM_UTILISATEUR:$MDPADMIN" | sudo chpasswd
+
+# Crée un répertoire de bienvenue dans le dossier personnel de l'utilisateur
+UTILISATEUR_HOME="/home/$NOM_UTILISATEUR/Bienvenue"
+sudo mkdir -p "$UTILISATEUR_HOME"
+sudo touch "$UTILISATEUR_HOME/fichier.txt"
+
+# Changer le propriétaire et définir les permissions
+sudo chown -R "$NOM_UTILISATEUR:$NOM_UTILISATEUR" "$UTILISATEUR_HOME"
+sudo chmod 700 "$UTILISATEUR_HOME"
+
+# Ajouter des informations dans fichier.txt
+echo "Bienvenue $NOM_UTILISATEUR" > "$UTILISATEUR_HOME/fichier.txt"
+# Ajouter l'adresse IP dans fichier.txt
+ip -4 addr show | grep "inet" | awk '{print $2}' | cut -d/ -f1 >> "$UTILISATEUR_HOME/fichier.txt"
+echo "Votre poste de travail est $NOM_POSTE_DE_TRAVAIL" >> "$UTILISATEUR_HOME/fichier.txt"
+
+# Message de confirmation
+echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
+
+# Affichage du contenu de fichier.txt
+cat "$UTILISATEUR_HOME/fichier.txt"
+ 
