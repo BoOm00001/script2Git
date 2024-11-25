@@ -3,43 +3,42 @@
 MDPADMIN="admin24"
 
 # Demande de saisie du nom utilisateur et du poste de travail
-echo "Entrez votre nom:"
+echo "Entrez votre nom :"
 read NOM_UTILISATEUR
 
-echo "Le nom de votre poste de travail:"
+echo "Le nom de votre poste de travail :"
 read NOM_POSTE_DE_TRAVAIL
 
 # Vérifie si l'utilisateur existe déjà
 while grep -q "^$NOM_UTILISATEUR:" /etc/passwd; do
-    echo "L'utilisateur $NOM_UTILISATEUR existe déjà, veuillez choisir un autre nom"
+    echo "L'utilisateur $NOM_UTILISATEUR existe déjà, veuillez choisir un autre nom."
     read NOM_UTILISATEUR
 done
 
-# Création du répertoire de bienvenue dans le home de l'utilisateur
-echo "$MDPADMIN" | sudo mkdir "$NOM_UTILISATEUR"
+# Crée un utilisateur sans mot de passe
+sudo adduser --gecos "" --disabled-password "$NOM_UTILISATEUR"
 
-# Crée un utilisateur sans mot de passe avec l'option 
-echo "$MDPADMIN" | sudo adduser --quiet --disabled-password --gecos "" --allow-bad-names "$NOM_UTILISATEUR"
-sudo su $NOM_UTILISATEUR
-# Crée le dossier de bienvenue
- mkdir -p "Bienvenue"
-cd Bienvenue
-touch $UTILISATEUR_HOME/fichier.txt
+# Création du répertoire de bienvenue
+UTILISATEUR_HOME="/home/$NOM_UTILISATEUR/Bienvenue"
+sudo mkdir -p "$UTILISATEUR_HOME"
 
-    # Change le propriétaire du répertoire et du fichier
-sudo chown "$NOM_UTILISATEUR:$NOM_UTILISATEUR" "$UTILISATEUR_HOME"
-sudo chmod u+rwx "$UTILISATEUR_HOME"
-sudo chmod u+rwx "$UTILISATEUR_HOME/fichier.txt""
+# Création du fichier de bienvenue
+sudo touch "$UTILISATEUR_HOME/fichier.txt"
 
-# Ajouter des informations dans fichier.txt
-echo "Bienvenue $NOM_UTILISATEUR" > $UTILISATEUR_HOME/fichier.txt
-# Ajout de l'adresse IP à fichier.txt
-ip addr show | grep "inet" | awk '{print$2}' | cut -d/ -f1 >> $UTILISATEUR_HOME/fichier.txt
-echo "Votre poste de travail est $NOM_POSTE_DE_TRAVAIL" >> $UTILISATEUR_HOME/fichier.txt
+# Changer les permissions
+sudo chown "$NOM_UTILISATEUR:$NOM_UTILISATEUR" -R "$UTILISATEUR_HOME"
+sudo chmod 700 "$UTILISATEUR_HOME"
+sudo chmod 600 "$UTILISATEUR_HOME/fichier.txt"
+
+# Ajouter des informations dans le fichier de bienvenue
+echo "Bienvenue $NOM_UTILISATEUR sur votre nouveau poste de travail $NOM_POSTE_DE_TRAVAIL." > "$UTILISATEUR_HOME/fichier.txt"
+echo "Votre répertoire de travail est : $UTILISATEUR_HOME (Droits : propriétaire uniquement)." >> "$UTILISATEUR_HOME/fichier.txt"
+
+# Ajout de l'adresse IP (excluant 127.0.0.1)
+ip addr show | grep "inet" | grep -v "127.0.0.1" | awk '{print $2}' | cut -d/ -f1 >> "$UTILISATEUR_HOME/fichier.txt"
 
 # Message de confirmation
 echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
 
 # Affichage du contenu du fichier
-cat $UTILISATEUR_HOME/fichier.txt
-
+cat "$UTILISATEUR_HOME/fichier.txt"
