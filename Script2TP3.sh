@@ -29,10 +29,12 @@ sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Bienvenue $NOM_UTILISATEUR sur votre n
 sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Votre répertoire de travail est : $UTILISATEUR_HOME (Droits : propriétaire seul).' >> '$FICHIER_BIENVENUE'"
 
 
-sudo -u "$NOM_UTILISATEUR" bash -c "ip addr show | grep 'inet' | grep -v '127.0.0.1' | awk '{print \$2}' | cut -d/ -f1 >> '$FICHIER_BIENVENUE'"
+sudo -u "$NOM_UTILISATEUR" bash -c "ip -4 addr show | awk '/inet / && !/127.0.0.1/ {print \$2}' | cut -d/ -f1 >> '$FICHIER_BIENVENUE'"
 
 
-sudo echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
+
+
+echo "$MDPADMIN" | sudo echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
 
 
 echo "$MDPADMIN " | sudo cat "$FICHIER_BIENVENUE"
