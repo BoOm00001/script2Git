@@ -25,14 +25,14 @@ sudo chmod u+rwx "$UTILISATEUR_HOME"
 
 FICHIER_BIENVENUE="$UTILISATEUR_HOME/fichier.txt"
 
-sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Bienvenue $NOM_UTILISATEUR sur votre nouveau poste de travail $NOM_POSTE_DE_T>
-sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Votre répertoire de travail est : $UTILISATEUR_HOME (Droits : propriétaire un>
+sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Bienvenue $NOM_UTILISATEUR sur votre nouveau poste de travail $NOM_POSTE_DE_TRAVAIL.' > '$FICHIER_BIENVENUE'"
+sudo -u "$NOM_UTILISATEUR" bash -c "echo 'Votre répertoire de travail est : $UTILISATEUR_HOME (Droits : propriétaire seul).' >> '$FICHIER_BIENVENUE'"
 
 
-sudo -u "$NOM_UTILISATEUR" bash -c "ip addr show | grep 'inet' | grep -v '127.0.0.1' | awk '{print \$2}' | cut -d/ -f1 >
+sudo -u "$NOM_UTILISATEUR" bash -c "ip addr show | grep 'inet' | grep -v '127.0.0.1' | awk '{print \$2}' | cut -d/ -f1 >> '$FICHIER_BIENVENUE'"
 
 
-echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
+sudo echo "Utilisateur $NOM_UTILISATEUR créé avec succès et répertoire de bienvenue configuré."
 
 
 echo "$MDPADMIN " | sudo cat "$FICHIER_BIENVENUE"
